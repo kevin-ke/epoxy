@@ -49,6 +49,7 @@ public abstract class EpoxyController {
   private boolean hasBuiltModelsEver;
   private List<ModelInterceptorCallback> modelInterceptorCallbacks;
   private int recyclerViewAttachCount = 0;
+  private EpoxyModel<?> stagedModel;
 
   /**
    * Call this to request a model update. The controller will schedule a call to {@link
@@ -124,6 +125,7 @@ public abstract class EpoxyController {
 
     timer.start();
     buildModels();
+    setStagedModel(null);
     timer.stop("Models built");
 
     runInterceptors();
@@ -331,7 +333,21 @@ public abstract class EpoxyController {
               + "model instead.");
     }
 
+    stagedModel = null;
+    modelToAdd.controllerToStageTo = null;
     modelsBeingBuilt.add(modelToAdd);
+  }
+
+  void setStagedModel(@Nullable EpoxyModel<?> model) {
+    if (model != stagedModel && stagedModel != null) {
+      stagedModel.addTo(this);
+    }
+
+    stagedModel = model;
+  }
+
+  void clearStagedModel() {
+    stagedModel = null;
   }
 
   boolean isBuildingModels() {

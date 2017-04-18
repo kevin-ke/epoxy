@@ -295,7 +295,8 @@ class ControllerProcessor {
     long id = -1;
     for (ControllerModelField model : controllerInfo.models) {
       builder.addStatement("controller.$L = new $T()", model.fieldName, model.typeName)
-          .addStatement("controller.$L.id($L)", model.fieldName, id--);
+          .addStatement("controller.$L.id($L)", model.fieldName, id--)
+          .addStatement("setControllerToStageTo(controller.$L, controller)", model.fieldName);
     }
 
     if (configManager.shouldValidateModelUsage()) {
